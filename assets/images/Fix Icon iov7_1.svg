@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30">
+    <g id="Group_13214" data-name="Group 13214" transform="translate(-273 -170)">
+        <circle id="Ellipse_1696" data-name="Ellipse 1696" cx="15" cy="15" r="15" transform="translate(273 170)" fill="#9E9E9E" />
+        <path id="Exclusion_11" data-name="Exclusion 11"
+            d="M11.2,16H1.6A1.6,1.6,0,0,1,0,14.4V1.6A1.6,1.6,0,0,1,1.6,0h9.6a1.6,1.6,0,0,1,1.6,1.6V14.4A1.6,1.6,0,0,1,11.2,16ZM6.4,6.4A3.2,3.2,0,1,0,9.6,9.6,3.2,3.2,0,0,0,6.4,6.4Zm0-3.2A1.2,1.2,0,1,0,7.6,4.4,1.2,1.2,0,0,0,6.4,3.2Zm0,8A1.6,1.6,0,1,1,8,9.6,1.6,1.6,0,0,1,6.4,11.2Z"
+            transform="translate(281.6 177)" fill="#ffffff" />
+    </g>
+</svg>

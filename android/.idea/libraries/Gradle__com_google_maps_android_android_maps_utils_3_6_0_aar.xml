@@ -1,0 +1,15 @@
+<component name="libraryTable">
+  <library name="Gradle: com.google.maps.android:android-maps-utils:3.6.0@aar" external-system-id="GRADLE">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.sdkman/candidates/java/17.0.14-jbr/caches/8.10.2/transforms/c1829c48a6283408dbe6d342b86f214e/transformed/jetified-android-maps-utils-3.6.0/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.sdkman/candidates/java/17.0.14-jbr/caches/8.10.2/transforms/c1829c48a6283408dbe6d342b86f214e/transformed/jetified-android-maps-utils-3.6.0/AndroidManifest.xml" />
+      <root url="file://$USER_HOME$/.sdkman/candidates/java/17.0.14-jbr/caches/8.10.2/transforms/c1829c48a6283408dbe6d342b86f214e/transformed/jetified-android-maps-utils-3.6.0/res" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.sdkman/candidates/java/17.0.14-jbr/caches/modules-2/files-2.1/com.google.maps.android/android-maps-utils/3.6.0/eddfa416ea635d13201a22fd4ca3c208ecbc4a61/android-maps-utils-3.6.0-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.sdkman/candidates/java/17.0.14-jbr/caches/modules-2/files-2.1/com.google.maps.android/android-maps-utils/3.6.0/68a5d27ebd41a255ad5cf34cedc6cc591ed2372/android-maps-utils-3.6.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

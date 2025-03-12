@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: org.jetbrains.kotlin:kotlin-test:1.9.24" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="org.jetbrains.kotlin" artifactId="kotlin-test" version="1.9.24" />
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.sdkman/candidates/java/17.0.14-jbr/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-test/1.9.24/e361ebc4889f48517d9de6453435e452d90e2415/kotlin-test-1.9.24.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.sdkman/candidates/java/17.0.14-jbr/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-test/1.9.24/f6f59039a76e8f3e4fe3a180520f84dc1dbf0d98/kotlin-test-1.9.24-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
