@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="48" height="48" viewBox="0 0 48 48">
+  <defs>
+    <clipPath id="clip-path">
+      <path id="Union_58" data-name="Union 58" d="M11.376,13.117,6.737,8.477,2.1,13.116a1.23,1.23,0,1,1-1.74-1.74L5,6.738.36,2.1A1.23,1.23,0,1,1,2.1.361L6.737,5,11.376.36a1.23,1.23,0,0,1,1.74,1.74L8.477,6.738l4.639,4.639a1.23,1.23,0,0,1-1.74,1.74Z" transform="translate(0 0)" fill="#ff6969"/>
+    </clipPath>
+  </defs>
+  <g id="Group_13531" data-name="Group 13531" transform="translate(-211 -122)">
+    <circle id="Ellipse_1641" data-name="Ellipse 1641" cx="24" cy="24" r="24" transform="translate(211 122)" fill="#fff"/>
+    <g id="Glyphs_Quick_Action_Close" data-name="Glyphs/Quick Action/Close" transform="translate(221.754 133.735)">
+      <g id="Group_86" data-name="Group 86" transform="translate(0 0)">
+        <g id="Mask" transform="translate(0 0)">
+          <path id="Mask-2" data-name="Mask" d="M7.79,16.809v-6.56H1.23a1.23,1.23,0,1,1,0-2.46H7.79V1.23a1.23,1.23,0,1,1,2.46,0V7.79h6.56a1.23,1.23,0,1,1,0,2.46h-6.56v6.56a1.23,1.23,0,1,1-2.46,0Z" transform="translate(0 12.756) rotate(-45)" fill="#ff6969" style="mix-blend-mode: color-burn;isolation: isolate"/>
+          <path id="Mask-3" data-name="Mask" d="M7.79,16.809v-6.56H1.23a1.23,1.23,0,1,1,0-2.46H7.79V1.23a1.23,1.23,0,1,1,2.46,0V7.79h6.56a1.23,1.23,0,1,1,0,2.46h-6.56v6.56a1.23,1.23,0,1,1-2.46,0Z" transform="translate(0 12.756) rotate(-45)" fill="#ff6969" stroke="#ff6969" stroke-width="1"/>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

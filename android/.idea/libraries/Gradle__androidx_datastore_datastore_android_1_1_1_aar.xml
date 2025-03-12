@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Gradle: androidx.datastore:datastore-android:1.1.1@aar" external-system-id="GRADLE">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.sdkman/candidates/java/17.0.14-jbr/caches/8.10.2/transforms/82fdf6aa55e78dd002b8f38e663ce004/transformed/jetified-datastore-release/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.sdkman/candidates/java/17.0.14-jbr/caches/8.10.2/transforms/82fdf6aa55e78dd002b8f38e663ce004/transformed/jetified-datastore-release/AndroidManifest.xml" />
+      <root url="file://$USER_HOME$/.sdkman/candidates/java/17.0.14-jbr/caches/8.10.2/transforms/82fdf6aa55e78dd002b8f38e663ce004/transformed/jetified-datastore-release/res" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.sdkman/candidates/java/17.0.14-jbr/caches/modules-2/files-2.1/androidx.datastore/datastore-android/1.1.1/f373c2d607dac74728c3f15eb0fc9b70dae0964e/datastore-android-1.1.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
