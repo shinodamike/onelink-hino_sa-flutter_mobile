@@ -1,4 +1,10 @@
-# Hino
+# HNZA
+
+# Dart
+- version 3.6.0
+
+# Flutter
+- version 3.27.0
 
 
 

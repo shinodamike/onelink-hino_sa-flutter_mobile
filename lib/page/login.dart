@@ -306,13 +306,16 @@ class _PageState extends State<LoginPage> {
                           //   ),
                           // )
                           Spacer(),
-                          SizedBox(
-                            // margin: const EdgeInsets.only(bottom: 10),
-                            width: screenWidth * 0.3, // 30% of screen width
-                            height: screenHeight * 0.12, // 12% of screen height
-                            child: Image.asset(
-                              // "assets/images/logo_login.png",
-                              "assets/images/netstarpg.png",
+                          Expanded(
+                            flex: 1,
+                            child: SizedBox(
+                              // margin: const EdgeInsets.only(bottom: 10),
+                              width: screenWidth * 0.3, // 30% of screen width
+                              height: screenHeight * 0.12, // 12% of screen height
+                              child: Image.asset(
+                                // "assets/images/logo_login.png",
+                                "assets/images/netstarpg.png",
+                              ),
                             ),
                           ),
                         ],
