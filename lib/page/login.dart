@@ -5,13 +5,13 @@ import 'package:iov/api/api.dart';
 import 'package:iov/localization/language/languages.dart';
 import 'package:iov/localization/locale_constant.dart';
 import 'package:iov/model/profile.dart';
-// import 'package:iov/page/forgot_password.dart';
 import 'package:iov/utils/color_custom.dart';
 import 'package:iov/utils/constants.dart';
 import 'package:iov/utils/utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 import 'dart:io' show Platform;
+import 'package:iov/api/api.dart';
 
 import 'home_realtime.dart';
 
@@ -70,7 +70,7 @@ class _PageState extends State<LoginPage> {
       "password": passwordController.text,
       // "userName": "hc0853861806s",
       // "password": "hc0853861806solt",
-      "applicationId": 2,
+      "applicationId": Api.applicationId,
       "app_id": "FLEET-$platform",
       "uuid": uuid.v1(),
       "token_id": token,
@@ -93,8 +93,7 @@ class _PageState extends State<LoginPage> {
                   storeProfile(json.encode(value)),
                   // Navigator.pushReplacement(
                   //     context, MaterialPageRoute(builder: (_) => HomePage()))
-                  Navigator.of(context).pushNamedAndRemoveUntil(
-                      '/root', (Route<dynamic> route) => false),
+                  Navigator.of(context).pushNamedAndRemoveUntil('/root', (Route<dynamic> route) => false),
                 }
               else
                 {

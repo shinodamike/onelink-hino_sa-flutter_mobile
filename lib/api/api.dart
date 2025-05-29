@@ -9,6 +9,7 @@ import 'package:http/http.dart' as http;
 import 'package:iov/utils/color_custom.dart';
 
 class Api {
+  static String applicationId = "8";
   static String BaseUrlBuilding =
       "https://60fixzr79l.execute-api.ap-southeast-1.amazonaws.com/prod/prod/";
 
@@ -88,7 +89,7 @@ class Api {
     'Accept-Language': language == "ja" || language == "en" ? "en" : "th",
     'Accept': 'application/json',
     'user_id': profile!.userId.toString(),
-    "applicationId": "2",
+    "applicationId": applicationId,
     "app_id": platform,
     "uuid": uuid,
     "token_id": token,
@@ -98,6 +99,7 @@ class Api {
 
   static Future<dynamic> get(BuildContext context, String url) async {
     try {
+      // TODO: Implement get method
       http.Response response;
       if (profile != null) {
         print("userID = ${profile!.userId}");
@@ -106,7 +108,7 @@ class Api {
           'Accept-Language': language == "ja" || language == "en" ? "en" : "th",
           'Accept': 'application/json',
           'user_id': profile!.userId.toString(),
-          "applicationId": "2",
+          "applicationId": applicationId,
           "app_id": platform,
           "uuid": uuid,
           "token_id": token,
@@ -168,7 +170,7 @@ class Api {
           'Accept-Language': language == "ja" ? "en" : "th",
           'Accept': 'application/json',
           'user_id': profile!.userId.toString(),
-          "applicationId": "2",
+          "applicationId": applicationId,
           "app_id": platform,
           "uuid": uuid,
           "token_id": token,
@@ -241,7 +243,7 @@ class Api {
           'Accept-Language': language,
           'Accept': 'application/json',
           'user_id': profile!.userId.toString(),
-          "applicationId": "2",
+          "applicationId": applicationId,
           "app_id": platform,
           "uuid": uuid,
           "token_id": token,
