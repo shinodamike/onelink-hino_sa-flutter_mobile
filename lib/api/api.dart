@@ -10,8 +10,8 @@ import 'package:iov/utils/color_custom.dart';
 
 class Api {
   static String applicationId = "8";
-  static String BaseUrlBuilding =
-      "https://60fixzr79l.execute-api.ap-southeast-1.amazonaws.com/prod/prod/";
+  static String BaseUrlBuilding = "https://60fixzr79l.execute-api.ap-southeast-1.amazonaws.com/prod/prod/";
+  // static String BaseUrlBuilding = "http://127.0.0.1:5000/prod/";
 
   static String firebase_key =
       "AAAAwmmo4S8:APA91bFrpiUhVSV5orW6qBnwzUa2376P3t7pTvkY-cPjTn2U_a93n3hj03CgaJNNjqTFZcA_KqcWggwbPZoyvzGXglFj5SEZDBVIQ985JW896aOXybIN2N_nSnxJY9BxBqNakXImCJYt";
