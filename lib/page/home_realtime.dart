@@ -14,7 +14,7 @@ import 'package:iov/localization/language/languages.dart';
 import 'package:iov/model/factory.dart';
 import 'package:iov/model/marker_icon.dart';
 import 'package:iov/model/marker_icon_factory.dart';
-import 'package:iov/model/place.dart';
+// import 'package:iov/model/place.dart';
 import 'package:iov/model/vehicle.dart';
 import 'package:iov/page/home_car.dart';
 import 'package:iov/page/home_detail.dart';
@@ -1633,9 +1633,7 @@ class _PageState extends State<HomeRealtimePage> {
                             }
                           }
                           if (_lastMapPosition == null) {
-                            mapController!.moveCamera(CameraUpdate.newLatLng(
-                                const LatLng(
-                                    13.252395652893867, 100.97986869513988)));
+                            mapController!.moveCamera(CameraUpdate.newLatLng(initMapLocation));
                           } else {
                             mapController!.moveCamera(
                                 CameraUpdate.newLatLng(_lastMapPosition!));
@@ -1785,9 +1783,9 @@ class _PageState extends State<HomeRealtimePage> {
                             updatePinRefresh();
                             mapController!.animateCamera(
                                 CameraUpdate.newLatLngZoom(
-                                    const LatLng(
-                                        13.252395652893867, 100.97986869513988),
-                                    5.5));
+                                  initMapLocation,
+                                  5.5,
+                                ));
                             isZoom = false;
                             vehicleClick = null;
 
