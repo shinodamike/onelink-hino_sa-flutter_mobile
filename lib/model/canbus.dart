@@ -20,7 +20,7 @@ class Canbus {
     dtcEngine = json['dtc_engine'];
     exhaustBrake = json['exhaust_brake'];
     footBrake = json['foot_brake'];
-    fuelPer = json['fuel_per'];
+    fuelPer = json['fuel_per'] != null ? int.tryParse(json['fuel_per'].toString()) : null;
     fuelRate = json['fuel_rate'];
     rpm = json['rpm'];
 

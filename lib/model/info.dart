@@ -9,6 +9,7 @@ class Info {
   int? speed_limit;
   int? class_type;
   String? odo;
+  String? odo_today;
   String? model_code;
   String? box_phone;
   int? vehicle_type;
@@ -31,6 +32,10 @@ class Info {
     odo = json['odo'];
     if (odo == null || odo!.isEmpty) {
       odo = "0";
+    }
+    odo_today = json['odo_today'];
+    if (odo_today == null || odo_today!.isEmpty) {
+      odo_today = "0";
     }
     if (json.containsKey("model_code")) {
       model_code = json["model_code"];
