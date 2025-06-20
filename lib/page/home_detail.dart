@@ -20,7 +20,7 @@ import 'home_detail_option_gallery.dart';
 import 'home_noti_event.dart';
 
 class HomeDetailPage extends StatefulWidget {
-  const HomeDetailPage({Key? key, required this.vehicle}) : super(key: key);
+  const HomeDetailPage({super.key, required this.vehicle});
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -662,7 +662,7 @@ class _PageState extends State<HomeDetailPage> {
                           ),
                         ),
                         Text(
-                          '${Utils.numberFormat(vehicle!.gps!.course!)} ${Languages.of(context)!.km}',
+                          '${Utils.numberFormat(double.parse(vehicle!.info!.odo_today!))} ${Languages.of(context)!.km}',
                           style: const TextStyle(
                             color: ColorCustom.black,
                             fontWeight: FontWeight.bold,

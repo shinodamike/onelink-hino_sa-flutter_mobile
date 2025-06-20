@@ -9,8 +9,11 @@ import 'package:http/http.dart' as http;
 import 'package:iov/utils/color_custom.dart';
 
 class Api {
+  static String applicationId = "8";
   static String BaseUrlBuilding =
       "https://60fixzr79l.execute-api.ap-southeast-1.amazonaws.com/prod/prod/";
+
+  // static String BaseUrlBuilding = "http://127.0.0.1:5000/prod/";
 
   static String firebase_key =
       "AAAAwmmo4S8:APA91bFrpiUhVSV5orW6qBnwzUa2376P3t7pTvkY-cPjTn2U_a93n3hj03CgaJNNjqTFZcA_KqcWggwbPZoyvzGXglFj5SEZDBVIQ985JW896aOXybIN2N_nSnxJY9BxBqNakXImCJYt";
@@ -62,7 +65,6 @@ class Api {
   static String postFileUrl =
       "https://ru.71dev.com/etest-enrollment/api/upload/upload";
 
-
   static String vehicle_by_dealer = "${BaseUrlBuilding}fleet/mobile/vehicle";
   static String report_working = "${BaseUrlBuilding}fleet/mobile/working/";
 
@@ -78,7 +80,7 @@ class Api {
 
   static String language = "en";
 
-  static String get Language => language;  // Getter for language
+  static String get Language => language; // Getter for language
 
   static setProfile(Profile p) {
     profile = p;
@@ -88,7 +90,7 @@ class Api {
     'Accept-Language': language == "ja" || language == "en" ? "en" : "th",
     'Accept': 'application/json',
     'user_id': profile!.userId.toString(),
-    "applicationId": "2",
+    "applicationId": applicationId,
     "app_id": platform,
     "uuid": uuid,
     "token_id": token,
@@ -98,6 +100,7 @@ class Api {
 
   static Future<dynamic> get(BuildContext context, String url) async {
     try {
+      // TODO: Implement get method
       http.Response response;
       if (profile != null) {
         print("userID = ${profile!.userId}");
@@ -106,7 +109,7 @@ class Api {
           'Accept-Language': language == "ja" || language == "en" ? "en" : "th",
           'Accept': 'application/json',
           'user_id': profile!.userId.toString(),
-          "applicationId": "2",
+          "applicationId": applicationId,
           "app_id": platform,
           "uuid": uuid,
           "token_id": token,
@@ -165,19 +168,22 @@ class Api {
       if (profile != null) {
         print("userID = ${profile!.userId}");
         Map<String, String> requestHeaders = {
-          'Accept-Language': language == "ja" ? "en" : "th",
+          'Accept-Language': language == "ja" || language == "en" ? "en" : "th",
           'Accept': 'application/json',
           'user_id': profile!.userId.toString(),
-          "applicationId": "2",
+          "applicationId": applicationId,
           "app_id": platform,
           "uuid": uuid,
           "token_id": token,
           "os": os,
           HttpHeaders.contentTypeHeader: "application/json"
-          // 'user_id': "38"
         };
-        response = await http.post(Uri.parse(url),
-            body: jsonParam, headers: requestHeaders);
+        print(requestHeaders.toString());
+        response = await http.post(
+          Uri.parse(url),
+          body: jsonParam,
+          headers: requestHeaders,
+        );
       } else {
         Map<String, String> requestHeaders = {
           HttpHeaders.contentTypeHeader: "application/json"
@@ -187,11 +193,7 @@ class Api {
             body: jsonParam, headers: requestHeaders);
       }
 
-      print('Accept-Language   ' +
-          language +
-          url +
-          "////" +
-          response.statusCode.toString());
+      // print('Accept-Language   ' + language + url + "////" + response.statusCode.toString());
       // print('print respon status code = ' + response.statusCode.toString());
       // print(response.body);
       printApiStatus(response);
@@ -241,7 +243,7 @@ class Api {
           'Accept-Language': language,
           'Accept': 'application/json',
           'user_id': profile!.userId.toString(),
-          "applicationId": "2",
+          "applicationId": applicationId,
           "app_id": platform,
           "uuid": uuid,
           "token_id": token,
@@ -335,7 +337,8 @@ class Api {
     Widget okButton = ElevatedButton(
       child: const Text("OK"),
       style: ElevatedButton.styleFrom(
-        backgroundColor: ColorCustom.primaryColor, // Set the background color here
+        backgroundColor:
+            ColorCustom.primaryColor, // Set the background color here
       ),
       onPressed: () {
         Navigator.pop(context);

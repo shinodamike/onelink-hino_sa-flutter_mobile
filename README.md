@@ -1,6 +1,16 @@
-# Hino
+# HNZA - Hino Connect
 
+# Dart
+- version 3.6.0
 
+# Flutter
+- version 3.27.0
+
+## Key Store - hnza.jks
+- alias: hnza
+- password: @n3L!nkdev
+- key alias: hnza-key
+- key password: P@ssw0rD
 
 ## Getting started
 

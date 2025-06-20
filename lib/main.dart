@@ -222,7 +222,7 @@ class MyAppState extends State<StatefulWidget> {
     });
   }
 
-  String appname = "HNZA";
+  String appname = "Hino Connect";
 
   @override
   Widget build(BuildContext context) {
