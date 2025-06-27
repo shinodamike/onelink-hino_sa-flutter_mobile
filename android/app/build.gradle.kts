@@ -6,6 +6,20 @@ plugins {
 }
 
 android {
+    signingConfigs {
+        getByName("debug") {
+            storeFile = file("/Users/shinodamike/GitHub/onelink-hino_sa-flutter_mobile/hnza.jks")
+            storePassword = "@n3L!nkdev"
+            keyAlias = "hnza-key"
+            keyPassword = "P@ssw0rD"
+        }
+        create("release") {
+            storeFile = file("/Users/shinodamike/GitHub/onelink-hino_sa-flutter_mobile/hnza.jks")
+            storePassword = "@n3L!nkdev"
+            keyAlias = "hnza-key"
+            keyPassword = "P@ssw0rD"
+        }
+    }
     namespace = "com.onelink.hnza"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
@@ -28,6 +42,7 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        signingConfig = signingConfigs.getByName("release")
     }
 
     buildTypes {

@@ -130,7 +130,7 @@ class Api {
       print('response.statusCode = ${response.statusCode}');
       if (response.statusCode == 200 || response.statusCode == 201) {
         final jsonResponse = json.decode(response.body);
-        print('jsonResponse = ${jsonResponse}');
+        // print('jsonResponse = ${jsonResponse}');
         return jsonResponse;
       } else if (response.statusCode == 404) {
         showAlertDialog(context, "Not found");
@@ -138,7 +138,7 @@ class Api {
         showAlertDialog(context, response.body);
         try {
           final jsonResponse = json.decode(response.body);
-          print(response.body);
+          // print(response.body);
           return jsonResponse;
         } catch (a) {
           print(a);
@@ -196,7 +196,7 @@ class Api {
       // print('Accept-Language   ' + language + url + "////" + response.statusCode.toString());
       // print('print respon status code = ' + response.statusCode.toString());
       // print(response.body);
-      printApiStatus(response);
+      // printApiStatus(response);
 
       if (response.statusCode == 200 ||
           response.statusCode == 201 ||
