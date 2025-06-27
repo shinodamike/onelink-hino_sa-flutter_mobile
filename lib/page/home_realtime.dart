@@ -69,6 +69,31 @@ class _PageState extends State<HomeRealtimePage> {
   // late ClusterManager _manager2;
   ValueNotifier<bool> isDialOpen = ValueNotifier(false);
   Timer? timer;
+  Duration _currentInterval = const Duration(seconds: 15);
+
+  void _onTimerTick() async {
+    try {
+      await getData(context);
+      // API success - set new interval
+      _currentInterval = const Duration(seconds: 30); // Change to desired interval
+      if (isPinFactory) {
+        // Handle factory data
+      }
+    } catch (e) {
+      // API failed - keep current or set shorter interval
+      _currentInterval = const Duration(seconds: 10);
+    }
+
+    if (mounted) {
+      _startTimer(); // Restart timer with new interval
+    }
+  }
+
+  void _startTimer() {
+    timer?.cancel();
+    timer = Timer(_currentInterval, _onTimerTick);
+  }
+
 
   // LatLng initMapLocation = LatLng(13.252395652893867, 100.97986869513988);
   LatLng initMapLocation = LatLng(-26.204444, 28.045556);
@@ -117,13 +142,14 @@ class _PageState extends State<HomeRealtimePage> {
     // if (listFactory.isEmpty) {
     //   getDataFactory(context);
     // }
-    timer = Timer.periodic(const Duration(seconds: 15), (Timer t) {
-      // listVehicleMarker.clear();
-      getData(context);
-      if (isPinFactory) {
-        // listFactoryMarker.clear();
-      }
-    });
+    // timer = Timer.periodic(const Duration(seconds: 15), (Timer t) {
+    //   // listVehicleMarker.clear();
+    //   getData(context);
+    //   if (isPinFactory) {
+    //     // listFactoryMarker.clear();
+    //   }
+    // });
+    _startTimer();
 
     super.initState();
   }
@@ -567,7 +593,7 @@ class _PageState extends State<HomeRealtimePage> {
       setState(() {
         markers.add(m);
       });
-      print('vehicle = ${v.info!.vid!} gps = ${v.gps!.lat!},${v.gps!.lng!}');
+      // print('vehicle = ${v.info!.vid!} gps = ${v.gps!.lat!},${v.gps!.lng!}');
       if (isShowDetail && vehicleClick != null && vehicleClick!.info!.vid == v.info!.vid!) {
             vehicleClick = v;
             setRadius(LatLng(vehicleClick!.gps!.lat!, vehicleClick!.gps!.lng!), vehicleClick!.info!.vid!.toString(), 80);
@@ -1499,7 +1525,8 @@ class _PageState extends State<HomeRealtimePage> {
                     //     : null;
                     // Set the map language
                     // Set the map language
-                    await controller.setMapStyle('''
+                    try {
+                      await mapController?.setMapStyle('''
                       [
                         {
                           "elementType": "labels",
@@ -1511,6 +1538,10 @@ class _PageState extends State<HomeRealtimePage> {
                         }
                       ]
                     ''');
+                    } catch (e) {
+                      print('Map style error: $e');
+                      await mapController?.setMapStyle(null); // Use default style
+                    }
                   },
                   onCameraMove: (value) {
                     _lastMapPosition = value.target;
