@@ -14,7 +14,6 @@ import 'package:iov/page/home.dart';
 import 'package:iov/page/home_noti_map.dart';
 import 'package:iov/page/login.dart';
 import 'package:iov/utils/color_custom.dart';
-import 'package:iov/utils/utils.dart';
 import 'package:iov/widget/notification_config.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -221,6 +220,7 @@ class MyAppState extends State<StatefulWidget> {
       Api.language = locale;
     });
   }
+
 
   String appname = "Hino Connect";
 

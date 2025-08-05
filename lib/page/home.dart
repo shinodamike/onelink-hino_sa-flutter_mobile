@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
-import 'dart:io';
 
 // import 'package:device_info_plus/device_info_plus.dart';
 
@@ -13,15 +12,17 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:iov/api/api.dart';
+import 'package:iov/model/agreement.dart';
 import 'package:iov/model/vehicle.dart';
+import 'package:iov/page/agreement.dart';
 import 'package:iov/page/home_backup.dart';
 import 'package:iov/page/home_dashboard.dart';
 import 'package:iov/page/home_driver.dart';
 import 'package:iov/page/home_realtime.dart';
 import 'package:iov/page/home_settings.dart';
-import 'package:iov/page/working_report.dart';
 import 'package:iov/provider/page_provider.dart';
 import 'package:iov/utils/color_custom.dart';
+import 'package:iov/utils/utils.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/src/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -29,7 +30,6 @@ import 'package:uuid/uuid.dart';
 import 'dart:ui' as ui;
 import 'package:http/http.dart' as http;
 
-import '../main.dart';
 import '../model/banner.dart';
 import '../model/marker_icon.dart';
 import '../model/profile.dart';
@@ -96,38 +96,30 @@ class _PageState extends State<HomePage> {
 
   @override
   void initState() {
+    super.initState();
+    _initializeApp();
+  }
+
+  void _initializeApp() async {
     isActive = true;
     _createMarkerImageFromAsset(context);
-    // FlutterAppBadger.removeBadge();
-    // initPush();
     getBanner(context);
     checkNotiSetting();
-
-    // String unix = "";
-    // FirebaseMessaging.instance.getInitialMessage().then((value) => {
-    //       if (value != null)
-    //         {
-    //           unix = value.data["unix"],
-    //           print("FirebaseMessaging.getInitialMessage " +
-    //               value.data.toString()),
-    //           if (unix.isNotEmpty) {onClickNotiUnix(unix)}
-    //         }
-    //     });
     reqPermission();
     checkProfile();
-    super.initState();
   }
 
   checkProfile() {
     var jsonResponse;
     Profile profile;
-    SharedPreferences.getInstance().then((prefs) => {
+    SharedPreferences.getInstance().then((prefs) async => {
           if (prefs.getString('profile') != null &&
               prefs.getString('profile')!.isNotEmpty)
             {
               jsonResponse = json.decode(prefs.getString('profile')!),
               profile = Profile.fromJson(jsonResponse),
               Api.setProfile(profile),
+              await checkAgreement(),
               refresh()
             }
           else
@@ -136,6 +128,39 @@ class _PageState extends State<HomePage> {
                   '/login', (Route<dynamic> route) => false)
             }
         });
+  }
+
+  Future<void> checkAgreement() async {
+    if (Api.profile != null && Api.profile!.isAgreement != true) {
+      try {
+        var value = await Api.get(context, Api.agreement.replaceAll('{user_id}', Api.profile?.userId.toString() ?? '').toString());
+        
+        if (value != null && value['result'] != null) {
+          Agreement agreement = Agreement.fromJson(value['result']);
+
+          if (agreement != null && (value['agreement_check'] ?? false) == true) {
+            print('Agreement already checked.');
+          } else {
+            print('Agreement not checked.');
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(
+                builder: (context) => AgreementPage(
+                  agreementId: agreement.id,
+                  agreementName: agreement.name,
+                  agreementDetail: agreement.description,
+                  effectiveDate: agreement.effective_date ?? '',
+                ),
+              ),
+              (Route<dynamic> route) => false,
+            );
+          }
+        } else {
+          Utils.showAlertDialog(context, "Failed to load agreement.");
+        }
+      } catch (e) {
+        print('Error checking agreement: $e');
+      }
+    }
   }
 
   reqPermission() async {

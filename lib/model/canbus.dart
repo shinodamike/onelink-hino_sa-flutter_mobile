@@ -14,16 +14,15 @@ class Canbus {
 
 
   Canbus.fromJson(Map<String, dynamic> json) {
-    accPedal = json['acc_pedal'];
+    accPedal = json['acc_pedal']?.toInt();
     clutchSwitch = json['clutch_switch'];
-    cooltemp = json['cooltemp'];
+    cooltemp = json['cooltemp']?.toInt();
     dtcEngine = json['dtc_engine'];
     exhaustBrake = json['exhaust_brake'];
     footBrake = json['foot_brake'];
-    fuelPer = json['fuel_per'] != null ? int.tryParse(json['fuel_per'].toString()) : null;
+    fuelPer = json['fuel_per']?.toInt();
     fuelRate = json['fuel_rate'];
-    rpm = json['rpm'];
-
+    rpm = json['rpm']?.toInt();
   }
 }
 

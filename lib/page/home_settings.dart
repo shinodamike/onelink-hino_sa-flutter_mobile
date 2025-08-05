@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 //FIXME : Comment awesome_notifications and firebase_messaging.
 // import 'package:awesome_notifications/awesome_notifications.dart';
 // import 'package:firebase_messaging/firebase_messaging.dart';
@@ -10,6 +11,7 @@ import 'package:iov/page/dashboard_filter.dart';
 import 'package:iov/page/home_realtime.dart';
 import 'package:iov/utils/color_custom.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 import 'home.dart';
 import 'login.dart';
@@ -31,12 +33,27 @@ class HomeSettingsPage extends StatefulWidget {
 }
 
 class _PageState extends State<HomeSettingsPage> {
+  String appVersion = '';
+  String buildNumber = '';
+
   @override
   void initState() {
     // getLanguage();
     // getLocale();
     getNoti();
+    getAppVersion();
     super.initState();
+  }
+
+  getAppVersion() async {
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    if (mounted) {
+      setState(() {
+        // appVersion = '${packageInfo.version}+${packageInfo.buildNumber}';
+        appVersion = packageInfo.version;
+        buildNumber = packageInfo.buildNumber;
+      });
+    }
   }
 
   clearProfile() async {
@@ -57,7 +74,7 @@ class _PageState extends State<HomeSettingsPage> {
       MaterialPageRoute<dynamic>(
         builder: (BuildContext context) => const LoginPage(),
       ),
-      (route) => false, //if you want to disable back feature set to false
+          (route) => false, //if you want to disable back feature set to false
     );
   }
 
@@ -92,7 +109,9 @@ class _PageState extends State<HomeSettingsPage> {
     isNotiSetting = l;
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setBool('noti', l);
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
     // if (l) {
     //   firebaseMessaging.getToken(vapidKey: Api.firebase_key).then((value) => {
     //         if (value != null) {token = value, postToken(context, token, l)}
@@ -105,10 +124,12 @@ class _PageState extends State<HomeSettingsPage> {
 
   getNoti() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      isNotiSetting = prefs.getBool('noti') ?? false;
-    });
-    print(isNotiSetting);
+    if (mounted) {
+      setState(() {
+        isNotiSetting = prefs.getBool('noti') ?? false;
+      });
+    }
+    // print(isNotiSetting);
   }
 
   postToken(BuildContext context, String tokens, bool noti) {
@@ -120,9 +141,7 @@ class _PageState extends State<HomeSettingsPage> {
     });
 
     Api.post(
-            context,
-            "${Api.token}/$platform/$uuid/$tokens?notify=$noti",
-            param)
+        context, "${Api.token}/$platform/$uuid/$tokens?notify=$noti", param)
         .then((value) => {if (value != null) {} else {}});
   }
 
@@ -148,235 +167,258 @@ class _PageState extends State<HomeSettingsPage> {
       body: SafeArea(
         child: Container(
           padding: const EdgeInsets.all(20),
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                Container(
-                  margin: const EdgeInsets.only(bottom: 20, top: 20),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: ColorCustom.greyBG2),
-                    borderRadius: const BorderRadius.all(
-                      Radius.circular(10.0),
-                    ),
-                  ),
-                  padding:
-                      const EdgeInsets.only(top: 10, bottom: 10, left: 10, right: 10),
-                  child: Row(
-                    children: [
-                      Api.profile!.avatarUrl != null
-                          ? Image.asset(
-                              "assets/images/profile_empty.png",
-                              width: 60,
-                              height: 60,
-                            )
-                          : Image.network(
-                              Api.profile!.avatarUrl,
-                              width: 60,
-                              height: 60,
-                            ),
-                      const SizedBox(
-                        width: 10,
+          child: Column(
+            children: [
+              SingleChildScrollView(
+                child: Column(
+                  children: [
+                    Container(
+                      margin: const EdgeInsets.only(bottom: 20, top: 20),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: ColorCustom.greyBG2),
+                        borderRadius: const BorderRadius.all(
+                          Radius.circular(10.0),
+                        ),
                       ),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                      padding: const EdgeInsets.only(
+                          top: 10, bottom: 10, left: 10, right: 10),
+                      child: Row(
+                        children: [
+                          Api.profile!.avatarUrl != null
+                              ? Image.asset(
+                            "assets/images/profile_empty.png",
+                            width: 60,
+                            height: 60,
+                          )
+                              : Image.network(
+                            Api.profile!.avatarUrl,
+                            width: 60,
+                            height: 60,
+                          ),
+                          const SizedBox(
+                            width: 10,
+                          ),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  Api.profile!.displayName,
+                                  style: const TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                Text(
+                                  Api.profile!.email,
+                                  style: const TextStyle(
+                                    color: Colors.grey,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    InkWell(
+                      onTap: () {
+                        if (Api.language == "en") {
+                          Api.language = "th";
+                          setLang();
+                          // } else if (Api.language == "th") {
+                          //   Api.language = "ja";
+                          //   setLang();
+                        } else {
+                          Api.language = "en";
+                          setLang();
+                        }
+                        if (mounted) {
+                          setState(() {});
+                        }
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.only(bottom: 20),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: ColorCustom.greyBG2),
+                          borderRadius: const BorderRadius.all(
+                            Radius.circular(10.0),
+                          ),
+                        ),
+                        padding: const EdgeInsets.only(
+                            top: 10, bottom: 10, left: 10, right: 10),
+                        child: Row(
                           children: [
-                            Text(
-                              Api.profile!.displayName,
-                              style: const TextStyle(
-                                  color: Colors.black,
+                            const Icon(
+                              Icons.translate,
+                              size: 30,
+                              color: Colors.grey,
+                            ),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            Expanded(
+                              child: Text(
+                                Languages.of(context)!.select_lang,
+                                style: const TextStyle(
+                                  color: Colors.grey,
                                   fontSize: 18,
-                                  fontWeight: FontWeight.bold),
+                                ),
+                              ),
                             ),
                             Text(
-                              Api.profile!.email,
+                              Api.language == "th"
+                                  ? 'ไทย'
+                                  : Api.language == "ja"
+                                  ? 'Japanese'
+                                  : "Eng",
                               style: const TextStyle(
-                                color: Colors.grey,
-                                fontSize: 14,
+                                color: ColorCustom.primaryColor,
+                                fontSize: 18,
                               ),
                             ),
                           ],
                         ),
                       ),
-                    ],
-                  ),
-                ),
-                InkWell(
-                  onTap: () {
-                    if (Api.language == "en") {
-                      Api.language = "th";
-                      setLang();
-                    // } else if (Api.language == "th") {
-                    //   Api.language = "ja";
-                    //   setLang();
-                    } else {
-                      Api.language = "en";
-                      setLang();
-                    }
-                    setState(() {});
-                  },
-                  child: Container(
-                    margin: const EdgeInsets.only(bottom: 20),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: ColorCustom.greyBG2),
-                      borderRadius: const BorderRadius.all(
-                        Radius.circular(10.0),
-                      ),
                     ),
-                    padding: const EdgeInsets.only(
-                        top: 10, bottom: 10, left: 10, right: 10),
-                    child: Row(
-                      children: [
-                        const Icon(
-                          Icons.translate,
-                          size: 30,
-                          color: Colors.grey,
-                        ),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        Expanded(
-                          child: Text(
-                            Languages.of(context)!.select_lang,
-                            style: const TextStyle(
-                              color: Colors.grey,
-                              fontSize: 18,
-                            ),
+                    // InkWell(
+                    //   onTap: () {
+                    //     noti = !noti;
+                    //     notiSetting(context, noti);
+                    //     setState(() {});
+                    //   },
+                    //   child: Container(
+                    //     margin: EdgeInsets.only(bottom: 10),
+                    //     decoration: BoxDecoration(
+                    //       border: Border.all(color: ColorCustom.greyBG2),
+                    //       borderRadius: BorderRadius.all(
+                    //         Radius.circular(10.0),
+                    //       ),
+                    //     ),
+                    //     padding: EdgeInsets.only(
+                    //         top: 10, bottom: 10, left: 10, right: 10),
+                    //     child: Row(
+                    //       children: [
+                    //         Icon(
+                    //           Icons.notifications,
+                    //           size: 30,
+                    //           color: noti ? ColorCustom.blue : Colors.grey,
+                    //         ),
+                    //         SizedBox(
+                    //           width: 10,
+                    //         ),
+                    //         Expanded(
+                    //           child: Text(Languages.of(context)!.notification,
+                    //             style: TextStyle(
+                    //               color: Colors.grey,
+                    //               fontSize: 18,
+                    //             ),
+                    //           ),
+                    //         ),
+                    //         Text(
+                    //           noti ? Languages.of(context)!.on : Languages.of(context)!.off,
+                    //           style: TextStyle(
+                    //             color: ColorCustom.blue,
+                    //             fontSize: 18,
+                    //           ),
+                    //         ),
+                    //       ],
+                    //     ),
+                    //   ),
+                    // ),
+                    InkWell(
+                      onTap: () {
+                        setNoti(!isNotiSetting);
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.only(bottom: 10),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: ColorCustom.greyBG2),
+                          borderRadius: const BorderRadius.all(
+                            Radius.circular(10.0),
                           ),
                         ),
-                        Text(
-                          Api.language == "th"
-                              ? 'ไทย'
-                              : Api.language == "ja"
-                                  ? 'Japanese'
-                                  : "Eng",
+                        padding: const EdgeInsets.only(
+                            top: 10, bottom: 10, left: 10, right: 10),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.notifications,
+                              size: 30,
+                              color: isNotiSetting
+                                  ? ColorCustom.primaryColor
+                                  : Colors.grey,
+                            ),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            Expanded(
+                              child: Text(
+                                Languages.of(context)!.notification,
+                                style: const TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 18,
+                                ),
+                              ),
+                            ),
+                            Text(
+                              isNotiSetting
+                                  ? Languages.of(context)!.on
+                                  : Languages.of(context)!.off,
+                              style: const TextStyle(
+                                color: ColorCustom.primaryColor,
+                                fontSize: 18,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    InkWell(
+                      onTap: () {
+                        logout(context);
+                      },
+                      child: Container(
+                        alignment: Alignment.center,
+                        width: double.infinity,
+                        margin: const EdgeInsets.only(bottom: 10, top: 40),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.red),
+                          borderRadius: const BorderRadius.all(
+                            Radius.circular(10.0),
+                          ),
+                        ),
+                        padding: const EdgeInsets.only(
+                            top: 10, bottom: 10, left: 10, right: 10),
+                        child: Text(
+                          Languages.of(context)!.sign_out,
                           style: const TextStyle(
-                            color: ColorCustom.primaryColor,
+                            color: Colors.red,
                             fontSize: 18,
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                ),
-                // InkWell(
-                //   onTap: () {
-                //     noti = !noti;
-                //     notiSetting(context, noti);
-                //     setState(() {});
-                //   },
-                //   child: Container(
-                //     margin: EdgeInsets.only(bottom: 10),
-                //     decoration: BoxDecoration(
-                //       border: Border.all(color: ColorCustom.greyBG2),
-                //       borderRadius: BorderRadius.all(
-                //         Radius.circular(10.0),
-                //       ),
-                //     ),
-                //     padding: EdgeInsets.only(
-                //         top: 10, bottom: 10, left: 10, right: 10),
-                //     child: Row(
-                //       children: [
-                //         Icon(
-                //           Icons.notifications,
-                //           size: 30,
-                //           color: noti ? ColorCustom.blue : Colors.grey,
-                //         ),
-                //         SizedBox(
-                //           width: 10,
-                //         ),
-                //         Expanded(
-                //           child: Text(Languages.of(context)!.notification,
-                //             style: TextStyle(
-                //               color: Colors.grey,
-                //               fontSize: 18,
-                //             ),
-                //           ),
-                //         ),
-                //         Text(
-                //           noti ? Languages.of(context)!.on : Languages.of(context)!.off,
-                //           style: TextStyle(
-                //             color: ColorCustom.blue,
-                //             fontSize: 18,
-                //           ),
-                //         ),
-                //       ],
-                //     ),
-                //   ),
-                // ),
-                InkWell(
-                  onTap: () {
-                    setNoti(!isNotiSetting);
-                  },
-                  child: Container(
-                    margin: const EdgeInsets.only(bottom: 10),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: ColorCustom.greyBG2),
-                      borderRadius: const BorderRadius.all(
-                        Radius.circular(10.0),
                       ),
                     ),
-                    padding: const EdgeInsets.only(
-                        top: 10, bottom: 10, left: 10, right: 10),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.notifications,
-                          size: 30,
-                          color: isNotiSetting ? ColorCustom.primaryColor : Colors.grey,
-                        ),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        Expanded(
-                          child: Text(
-                            Languages.of(context)!.notification,
-                            style: const TextStyle(
-                              color: Colors.grey,
-                              fontSize: 18,
-                            ),
-                          ),
-                        ),
-                        Text(
-                          isNotiSetting
-                              ? Languages.of(context)!.on
-                              : Languages.of(context)!.off,
-                          style: const TextStyle(
-                            color: ColorCustom.primaryColor,
-                            fontSize: 18,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  ],
                 ),
-                InkWell(
-                  onTap: () {
-                    logout(context);
-                  },
-                  child: Container(
-                    alignment: Alignment.center,
-                    width: double.infinity,
-                    margin: const EdgeInsets.only(bottom: 10, top: 40),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.red),
-                      borderRadius: const BorderRadius.all(
-                        Radius.circular(10.0),
-                      ),
-                    ),
-                    padding: const EdgeInsets.only(
-                        top: 10, bottom: 10, left: 10, right: 10),
-                    child: Text(
-                      Languages.of(context)!.sign_out,
-                      style: const TextStyle(
-                        color: Colors.red,
-                        fontSize: 18,
-                      ),
-                    ),
-                  ),
+              ),
+              Spacer(),
+              Text(
+                'version $appVersion build $buildNumber',
+                style: const TextStyle(
+                  color: Colors.grey,
+                  fontSize: 12,
                 ),
-              ],
-            ),
+              ),
+              Text(
+                'All Rights Reserved. © Onelink Technology Co., Ltd.',
+                style: const TextStyle(
+                  color: Colors.grey,
+                  fontSize: 12,
+                ),
+              ),
+            ],
           ),
         ),
       ),

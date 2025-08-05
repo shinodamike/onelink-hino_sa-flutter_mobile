@@ -17,17 +17,17 @@ class Info {
 
   Info.fromJson(Map<String, dynamic> json) {
     vin_no = json['vin_no'];
-    vid = json['vid'];
-    vehicle_id = json['vehicle_id'];
+    vid = json['vid']?.toInt();
+    vehicle_id = json['vehicle_id']?.toInt();
     licenseplate = json['licenseplate'];
 
     licenseprov = json['licenseprov'];
     vehicle_name = json['vehicle_name'];
-    speed_limit = json['speed_limit'];
-    class_type = json['class_type'];
-     box_phone = json['box_phone'];
-    vehicle_type = json['vehicle_type']??0;
-    geofence_name = json['geofence_name']??"-";
+    speed_limit = json['speed_limit']?.toInt();
+    class_type = json['class_type']?.toInt();
+    box_phone = json['box_phone'];
+    vehicle_type = json['vehicle_type']?.toInt() ?? 0;
+    geofence_name = json['geofence_name'] ?? "-";
 
     odo = json['odo'];
     if (odo == null || odo!.isEmpty) {

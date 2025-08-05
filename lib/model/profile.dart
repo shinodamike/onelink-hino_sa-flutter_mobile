@@ -14,6 +14,7 @@ class Profile {
   var defaultLanguageId;
   var language;
   var redisKey;
+  bool? isAgreement = false;
 
 
   Profile.fromJson(Map<String, dynamic> json) {

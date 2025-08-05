@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:iov/api/api.dart';
 import 'package:iov/localization/language/languages.dart';
 import 'package:iov/localization/locale_constant.dart';
+import 'package:iov/model/agreement.dart';
 import 'package:iov/model/profile.dart';
 import 'package:iov/utils/color_custom.dart';
 import 'package:iov/utils/constants.dart';
@@ -13,6 +14,7 @@ import 'package:uuid/uuid.dart';
 import 'dart:io' show Platform;
 import 'package:iov/api/api.dart';
 
+import 'agreement.dart';
 import 'home_realtime.dart';
 
 class LoginPage extends StatefulWidget {
@@ -52,6 +54,41 @@ class _PageState extends State<LoginPage> {
   TextEditingController usernameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
+  checkAgreement(BuildContext context, String userId) async {
+    print('Checking agreement for user: $userId');
+    // Ensure that the userId is not null or empty
+    Agreement agreement;
+    Api.get(context, Api.agreement.replaceAll('{user_id}', userId).toString()).then((value) => {
+      if (value != null && value['result'] != null) {
+        agreement = Agreement.fromJson(value['result']),
+
+        if (agreement != null && (value['agreement_check'] ?? false) == true) {
+          print('Agreement already checked.'),
+          Navigator.of(context).pushNamedAndRemoveUntil('/root', (Route<dynamic> route) => false),
+        } else {
+          print('Agreement not checked.'),
+          print(agreement.id),
+          print(agreement.name),
+          print(agreement.description),
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(
+              builder: (context) => AgreementPage(
+                agreementId: agreement.id,
+                agreementName: agreement.name,
+                agreementDetail: agreement.description,
+                effectiveDate: agreement.effective_date ?? '',
+              ),
+            ),
+            (Route<dynamic> route) => false,
+          ),
+        }
+      } else {
+        Utils.showAlertDialog(context, "Failed to load agreement."),
+      }
+    });
+    print('Finished checking agreement for user: $userId');
+  }
+
   loginApi(BuildContext context) {
     isLoading = true;
     refresh();
@@ -79,7 +116,7 @@ class _PageState extends State<LoginPage> {
     });
 
     Profile profile;
-    Api.post(context, Api.login, param).then((value) => {
+    Api.post(context, Api.login, param).then((value) async => {
           isLoading = false,
           refresh(),
           if (value != null)
@@ -93,7 +130,8 @@ class _PageState extends State<LoginPage> {
                   storeProfile(json.encode(value)),
                   // Navigator.pushReplacement(
                   //     context, MaterialPageRoute(builder: (_) => HomePage()))
-                  Navigator.of(context).pushNamedAndRemoveUntil('/root', (Route<dynamic> route) => false),
+
+                  await checkAgreement(context, profile.userId.toString()),
                 }
               else
                 {

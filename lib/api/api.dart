@@ -10,8 +10,9 @@ import 'package:iov/utils/color_custom.dart';
 
 class Api {
   static String applicationId = "8";
-  static String BaseUrlBuilding =
-      "https://60fixzr79l.execute-api.ap-southeast-1.amazonaws.com/prod/prod/";
+  static int agreementTypeId = 2;
+  // static String BaseUrlBuilding = "https://60fixzr79l.execute-api.ap-southeast-1.amazonaws.com/prod/prod/";
+  static String BaseUrlBuilding = "https://mobile-api.hino-connect.co.za/prod/";
 
   // static String BaseUrlBuilding = "http://127.0.0.1:5000/prod/";
 
@@ -23,6 +24,12 @@ class Api {
       "${BaseUrlBuilding}users/auth/forgot-password";
   static String forgot_password_confirm =
       "${BaseUrlBuilding}users/auth/confirm-forgot-password";
+
+  static String agreement =
+      "${BaseUrlBuilding}fleet/mobile/agreement?user_id={user_id}&agreementTypeId=${agreementTypeId}";
+  static String agreement_update =
+      "${BaseUrlBuilding}fleet/mobile/agreement";
+
 
   // static String realtime = BaseUrlBuilding + "fleet/mobile/realtime";
   static String realtime = "${BaseUrlBuilding}fleet/mobile/V2/realtime";
@@ -84,6 +91,10 @@ class Api {
 
   static setProfile(Profile p) {
     profile = p;
+  }
+
+  static setProfileAgreement(bool isAgreement) {
+    profile!.isAgreement = isAgreement;
   }
 
   static Map<String, String> requestHeaders = {
