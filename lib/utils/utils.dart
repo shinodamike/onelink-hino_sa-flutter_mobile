@@ -772,14 +772,14 @@ class Utils {
     Widget okButton = ElevatedButton(
       child: const Text("Go back"),
       onPressed: () {
-        Navigator.pop(context);
-        Navigator.pop(context);
+        Navigator.pop(context); // This pops the dialog
+        Navigator.pop(context); // This pops the current page
       },
     );
 
     // set up the AlertDialog
     AlertDialog alert = AlertDialog(
-      title: const Text("No data found"),
+      // title: const Text("No data found"),
       content: const Text("Please Try Again"),
       actions: [
         okButton,
@@ -787,10 +787,27 @@ class Utils {
     );
 
     // show the dialog
+    // showDialog(
+    //   context: context,
+    //   builder: (BuildContext context) {
+    //     return alert;
+    //   },
+    // );
     showDialog(
       context: context,
-      builder: (BuildContext context) {
-        return alert;
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          content: const Text("No data found"),
+          actions: [
+            ElevatedButton(
+              child: const Text("OK"),
+              onPressed: () {
+                Navigator.pop(dialogContext); // Pop dialog
+                Navigator.pop(context);       // Pop page
+              },
+            ),
+          ],
+        );
       },
     );
   }
