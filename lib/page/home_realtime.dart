@@ -543,7 +543,7 @@ class _PageState extends State<HomeRealtimePage> {
     Api.get(context, Api.realtime).then((value) => {
           isLoading = false,
           setState(() {}),
-          if (value != null)
+          if (value != null && value['vehicles'] != null)
             {
               listVehicle = List.from(value['vehicles'])
                   .map((a) => Vehicle.fromJson(a))

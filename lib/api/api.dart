@@ -111,7 +111,6 @@ class Api {
 
   static Future<dynamic> get(BuildContext context, String url) async {
     try {
-      // TODO: Implement get method
       http.Response response;
       if (profile != null) {
         print("userID = ${profile!.userId}");
