@@ -198,9 +198,9 @@ class _PageState extends State<HomeRealtimePage> {
 
     if (mapController != null) {
       if (isLicense) {
-        mapController?.showMarkerInfoWindow(MarkerId(vehicleClick!.info!.licenseplate!));
+        mapController?.showMarkerInfoWindow(MarkerId(v.info!.vid.toString()));
       } else {
-        mapController?.hideMarkerInfoWindow(MarkerId(vehicleClick!.info!.licenseplate!));
+        mapController?.hideMarkerInfoWindow(MarkerId(v.info!.vid.toString()));
       }
 
       mapController!.animateCamera(CameraUpdate.newLatLngZoom(LatLng(vehicleClick!.gps!.lat!, vehicleClick!.gps!.lng!), 16));
@@ -245,38 +245,38 @@ class _PageState extends State<HomeRealtimePage> {
     });
   }
 
-  Future<Marker> _markerBuilder
-      (cluster) async {
-        if (cluster.items.length == 1) {
-          Vehicle? v;
-          for (var p in cluster.items) {
-            v = p.vehicle;
-          }
-
-          return Marker(
-            // markerId: MarkerId(cluster.getId()),
-            markerId: MarkerId(v!.info!.licenseplate!),
-            position: cluster.location,
-            onTap: () {
-              markerVehicleClick(v!);
-            },
-            // rotation: v!.gps!.course!,
-            anchor: const Offset(0.5, 0.5),
-            // infoWindow: InfoWindow(
-            //     title: v!.info!.vehicle_name, anchor: Offset(0.5, 0.5)),
-            // icon: getMapIcon(v!)!,
-            icon: await MarkerLicense.getMarkerIcon(
-                v, isLicense, getMapIconByte(v)),
-          );
-        } else {
-          return Marker(
-            markerId: MarkerId(cluster.getId()),
-            position: cluster.location,
-            anchor: const Offset(0.5, 0.5),
-            // icon: await _getMarkerBitmap(cluster, cluster.isMultiple ? 125 : 75, text: cluster.isMultiple ? cluster.count.toString() : null),
-          );
-        }
-      }
+  // Future<Marker> _markerBuilder
+  //     (cluster) async {
+  //       if (cluster.items.length == 1) {
+  //         Vehicle? v;
+  //         for (var p in cluster.items) {
+  //           v = p.vehicle;
+  //         }
+  //
+  //         return Marker(
+  //           // markerId: MarkerId(cluster.getId()),
+  //           markerId: MarkerId(v!.info!.licenseplate!),
+  //           position: cluster.location,
+  //           onTap: () {
+  //             markerVehicleClick(v!);
+  //           },
+  //           // rotation: v!.gps!.course!,
+  //           anchor: const Offset(0.5, 0.5),
+  //           // infoWindow: InfoWindow(
+  //           //     title: v!.info!.vehicle_name, anchor: Offset(0.5, 0.5)),
+  //           // icon: getMapIcon(v!)!,
+  //           icon: await MarkerLicense.getMarkerIcon(
+  //               v, isLicense, getMapIconByte(v)),
+  //         );
+  //       } else {
+  //         return Marker(
+  //           markerId: MarkerId(cluster.getId()),
+  //           position: cluster.location,
+  //           anchor: const Offset(0.5, 0.5),
+  //           // icon: await _getMarkerBitmap(cluster, cluster.isMultiple ? 125 : 75, text: cluster.isMultiple ? cluster.count.toString() : null),
+  //         );
+  //       }
+  //     }
 
   // Future<Marker> Function(Cluster<Place>) get _markerBuilder2 =>
   //     (cluster) async {
@@ -583,16 +583,18 @@ class _PageState extends State<HomeRealtimePage> {
   updatePinRefresh() async {
     listVehicleMarker.clear();
     for (Vehicle v in listVehicle) {
+      final icon = await MarkerLicense.getMarkerIcon(v, isLicense, getMapIconByte(v));
       final m = Marker(
         markerId: MarkerId(v.info!.vid.toString()),
         position: LatLng(v.gps!.lat!, v.gps!.lng!),
         clusterManagerId: clusterManager.clusterManagerId,
-        icon: await MarkerLicense.getMarkerIcon(v, isLicense, getMapIconByte(v)),
+        icon: icon,
         infoWindow: InfoWindow(title: v.info!.licenseplate),
       );
-      setState(() {
-        markers.add(m);
-      });
+      markers.add(m);
+      // setState(() {
+      //   markers.add(m);
+      // });
       // print('vehicle = ${v.info!.vid!} gps = ${v.gps!.lat!},${v.gps!.lng!}');
       if (isShowDetail && vehicleClick != null && vehicleClick!.info!.vid == v.info!.vid!) {
             vehicleClick = v;
