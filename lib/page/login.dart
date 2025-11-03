@@ -58,34 +58,42 @@ class _PageState extends State<LoginPage> {
     print('Checking agreement for user: $userId');
     // Ensure that the userId is not null or empty
     Agreement agreement;
-    Api.get(context, Api.agreement.replaceAll('{user_id}', userId).toString()).then((value) => {
-      if (value != null && value['result'] != null) {
-        agreement = Agreement.fromJson(value['result']),
-
-        if (agreement != null && (value['agreement_check'] ?? false) == true) {
-          print('Agreement already checked.'),
-          Navigator.of(context).pushNamedAndRemoveUntil('/root', (Route<dynamic> route) => false),
-        } else {
-          print('Agreement not checked.'),
-          print(agreement.id),
-          print(agreement.name),
-          print(agreement.description),
-          Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(
-              builder: (context) => AgreementPage(
-                agreementId: agreement.id,
-                agreementName: agreement.name,
-                agreementDetail: agreement.description,
-                effectiveDate: agreement.effective_date ?? '',
-              ),
-            ),
-            (Route<dynamic> route) => false,
-          ),
-        }
-      } else {
-        Utils.showAlertDialog(context, "Failed to load agreement."),
-      }
-    });
+    Api.get(context, Api.agreement.replaceAll('{user_id}', userId).toString())
+        .then((value) => {
+              if (value != null && value['result'] != null)
+                {
+                  agreement = Agreement.fromJson(value['result']),
+                  if (agreement != null &&
+                      (value['agreement_check'] ?? false) == true)
+                    {
+                      print('Agreement already checked.'),
+                      Navigator.of(context).pushNamedAndRemoveUntil(
+                          '/root', (Route<dynamic> route) => false),
+                    }
+                  else
+                    {
+                      print('Agreement not checked.'),
+                      print(agreement.id),
+                      print(agreement.name),
+                      print(agreement.description),
+                      Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(
+                          builder: (context) => AgreementPage(
+                            agreementId: agreement.id,
+                            agreementName: agreement.name,
+                            agreementDetail: agreement.description,
+                            effectiveDate: agreement.effective_date ?? '',
+                          ),
+                        ),
+                        (Route<dynamic> route) => false,
+                      ),
+                    }
+                }
+              else
+                {
+                  Utils.showAlertDialog(context, "Failed to load agreement."),
+                }
+            });
     print('Finished checking agreement for user: $userId');
   }
 
@@ -195,8 +203,8 @@ class _PageState extends State<LoginPage> {
   setLang() {
     if (Api.language == "en") {
       Api.language = "th";
-    // } else if (Api.language == "th") {
-    //   Api.language = "ja";
+      // } else if (Api.language == "th") {
+      //   Api.language = "ja";
     } else {
       Api.language = "en";
     }
@@ -216,7 +224,7 @@ class _PageState extends State<LoginPage> {
     double screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: true,
       backgroundColor: Colors.black,
       body: SafeArea(
         child: Stack(
@@ -226,162 +234,77 @@ class _PageState extends State<LoginPage> {
                 gradient: LinearGradient(
                   begin: Alignment.bottomCenter,
                   end: Alignment.topCenter,
-                  colors: [
-                    ColorCustom.greyBG2,
-                    Colors.white,
-                  ],
+                  colors: [ColorCustom.greyBG2, Colors.white],
                 ),
               ),
-              child: Column(
+              child: ListView(
+                padding: const EdgeInsets.all(20),
                 children: [
-                  Expanded(
-                    child: Container(
-                      margin: const EdgeInsets.all(20),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            margin: const EdgeInsets.only(top: 60, bottom: 40),
-                            width: screenWidth * 0.7, // 70% of screen width
-                            height: screenHeight * 0.35, // 35% of screen height
-                            child: Column(
-                              children: [
-                                SizedBox(
-                                  child: Image.asset(
-                                    "assets/images/hino-connect.png",
-                                  ),
-                                ),
-                                SizedBox(
-                                  child: Image.asset(
-                                    // "assets/images/logo_login.png",
-                                    "assets/images/hnzaicon.png",
-                                  ),
-                                )
-                              ],
-                            ),
-                          ),
-                          Row(
-                            children: [
-                              Expanded(
-                                flex: 3,
-                                child: SizedBox(
-                                  child: TextField(
-                                    controller: usernameController,
-                                    keyboardType: TextInputType.text,
-                                    decoration: InputDecoration(
-                                      suffixIcon: const Icon(Icons.person_outline),
-                                      hintText: Languages.of(context)!.username,
-                                      hintStyle: const TextStyle(fontSize: 16),
-                                      // fillColor: colorSearchBg,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          Row(
-                            children: [
-                              Expanded(
-                                flex: 3,
-                                child: Container(
-                                  child: TextField(
-                                    controller: passwordController,
-                                    obscureText: true,
-                                    keyboardType: TextInputType.text,
-                                    decoration: InputDecoration(
-                                      suffixIcon: const Icon(Icons.lock_outline),
-                                      hintText: Languages.of(context)!.password,
-                                      hintStyle: const TextStyle(fontSize: 16),
-                                      // fillColor: colorSearchBg,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 40,
-                          ),
-                          SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: ColorCustom.primaryColor,
-                                padding: const EdgeInsets.all(15),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius:
-                                      BorderRadius.circular(5), // <-- Radius
-                                ),
-                              ),
-                              onPressed: () {
-                                loginApi(context);
-                              },
-                              child: Text(
-                                Languages.of(context)!.signin,
-                                style: const TextStyle(
-                                    color: Colors.white, fontSize: 18),
-                              ),
-                            ),
-                          ),
-                          // Container(
-                          //   margin: const EdgeInsets.only(top: 20),
-                          //   alignment: Alignment.centerRight,
-                          //   child: InkWell(
-                          //     onTap: () {
-                          //       Navigator.of(context).push(MaterialPageRoute(
-                          //           builder: (context) =>
-                          //               const ForgotPasswordPage()));
-                          //     },
-                          //     child: Text(
-                          //       Languages.of(context)!.forgot_password,
-                          //       style: const TextStyle(
-                          //           color: Colors.black, fontSize: 16),
-                          //     ),
-                          //   ),
-                          // )
-                          Spacer(),
-                          Expanded(
-                            flex: 1,
-                            child: SizedBox(
-                              // margin: const EdgeInsets.only(bottom: 10),
-                              width: screenWidth * 0.3, // 30% of screen width
-                              height: screenHeight * 0.12, // 12% of screen height
-                              child: Image.asset(
-                                // "assets/images/logo_login.png",
-                                "assets/images/netstarpg.png",
-                              ),
-                            ),
-                          ),
-                        ],
+                  SizedBox(height: screenHeight * 0.05),
+                  SizedBox(
+                    width: screenWidth * 0.7,
+                    child: Column(
+                      children: [
+                        Image.asset("assets/images/hino-connect.png"),
+                        Image.asset("assets/images/hnzaicon.png"),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 40),
+                  TextField(
+                    controller: usernameController,
+                    keyboardType: TextInputType.text,
+                    decoration: InputDecoration(
+                      suffixIcon: const Icon(Icons.person_outline),
+                      hintText: Languages.of(context)!.username,
+                      hintStyle: const TextStyle(fontSize: 16),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  TextField(
+                    controller: passwordController,
+                    obscureText: true,
+                    keyboardType: TextInputType.text,
+                    decoration: InputDecoration(
+                      suffixIcon: const Icon(Icons.lock_outline),
+                      hintText: Languages.of(context)!.password,
+                      hintStyle: const TextStyle(fontSize: 16),
+                    ),
+                  ),
+                  const SizedBox(height: 40),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: ColorCustom.primaryColor,
+                        padding: const EdgeInsets.all(15),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                      ),
+                      onPressed: () => loginApi(context),
+                      child: Text(
+                        Languages.of(context)!.signin,
+                        style:
+                            const TextStyle(color: Colors.white, fontSize: 18),
                       ),
                     ),
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      SizedBox(width: Constants.spaceScreenLeft),
-                      const Text(
-                        "All Rights Reserved. © Onelink Technology Co., Ltd.",
-                        style: TextStyle(color: Colors.black, fontSize: 10),
-                      ),
-                    ],
+                  SizedBox(height: screenHeight * 0.05),
+                  Center(
+                    child: Image.asset(
+                      "assets/images/netstarpg.png",
+                      width: screenWidth * 0.3,
+                    ),
                   ),
-                  const SizedBox(
-                    height: 10,
-                  )
                 ],
               ),
             ),
-            Container(
-              margin: const EdgeInsets.all(10),
-              alignment: Alignment.topRight,
+            Positioned(
+              top: 10,
+              right: 10,
               child: InkWell(
-                onTap: (){
-                  setLang();
-                },
+                onTap: () => setLang(),
                 child: const Icon(
                   Icons.language,
                   size: 35,
@@ -389,11 +312,14 @@ class _PageState extends State<LoginPage> {
                 ),
               ),
             ),
-            isLoading
-                ? const Center(
-                    child: CircularProgressIndicator(color: ColorCustom.primaryColor),
-                  )
-                : Container()
+            if (isLoading)
+              Container(
+                color: Colors.black26,
+                child: const Center(
+                  child: CircularProgressIndicator(
+                      color: ColorCustom.primaryColor),
+                ),
+              ),
           ],
         ),
       ),
