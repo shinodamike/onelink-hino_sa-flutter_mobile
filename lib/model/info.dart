@@ -26,7 +26,7 @@ class Info {
     speed_limit = json['speed_limit']?.toInt();
     class_type = json['class_type']?.toInt();
     box_phone = json['box_phone'];
-    vehicle_type = json['vehicle_type']?.toInt() ?? 0;
+    vehicle_type = json['vehicle_type']?.toInt() ?? 4;
     geofence_name = json['geofence_name'] ?? "-";
 
     odo = json['odo'];

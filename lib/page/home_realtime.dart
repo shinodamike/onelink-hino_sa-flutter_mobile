@@ -22,7 +22,9 @@ import 'package:iov/page/home_news.dart';
 import 'package:iov/page/info.dart';
 import 'package:iov/provider/page_provider.dart';
 import 'package:iov/utils/color_custom.dart';
+import 'package:iov/utils/commons.dart';
 import 'package:iov/utils/marker_license.dart';
+import 'package:iov/utils/timeago.dart';
 import 'package:iov/utils/utils.dart';
 import 'package:iov/widget/back_ios.dart';
 import 'package:image/image.dart' as IMG;
@@ -64,6 +66,7 @@ class _PageState extends State<HomeRealtimePage> {
   // List<Place> listVehicleMarker = [];
   List<Marker> listVehicleMarker = [];
   Uint8List? markerIcon;
+  Map<String, BitmapDescriptor> _markerIconCache = {};
   // late ClusterManager _manager;
 
   // late ClusterManager _manager2;
@@ -94,6 +97,8 @@ class _PageState extends State<HomeRealtimePage> {
     timer = Timer(_currentInterval, _onTimerTick);
   }
 
+  Offset? _infoWindowOffset;
+  final GlobalKey _infoWindowKey = GlobalKey();
 
   // LatLng initMapLocation = LatLng(13.252395652893867, 100.97986869513988);
   LatLng initMapLocation = LatLng(-26.204444, 28.045556);
@@ -185,7 +190,12 @@ class _PageState extends State<HomeRealtimePage> {
   //   refresh();
   // }
 
-  markerVehicleClick(Vehicle v) {
+  markerVehicleClick(Vehicle v, ScreenCoordinate? screenCoordinate) async {
+    if (v?.gps?.lat == null || v.gps?.lng == null ||
+        v.gps!.lat!.isNaN || v.gps!.lng!.isNaN) {
+      return;
+    }
+
     listVehicleMarker.clear();
     isZoom = true;
     vehicleClick = v;
@@ -207,19 +217,45 @@ class _PageState extends State<HomeRealtimePage> {
     }
 
     // listVehicleMarker.add(Place(latLng: LatLng(v.gps!.lat!, v.gps!.lng!), vehicle: v));
+    final clickCacheKey = '${v.info!.vid}_${v.gps!.course?.toInt()}_$isLicense';
+    if (!_markerIconCache.containsKey(clickCacheKey)) {
+      _markerIconCache[clickCacheKey] = await MarkerLicense.getMarkerIcon(v, isLicense, getMapIconByteV2(v));
+    }
     listVehicleMarker.add(
       Marker(
         markerId: MarkerId(v.info!.vid.toString()),
         position: LatLng(v.gps!.lat!, v.gps!.lng!),
         clusterManagerId: clusterManager.clusterManagerId,
+        anchor: const Offset(0.5, 0.5),
+        flat: true,
+        icon: _markerIconCache[clickCacheKey]!,
       )
     );
 
-    setState(() {
-      isShowDetail = true;
-      isShowDetailFactory = false;
-      isShowDetailFactoryFull = false;
-    });
+    if (mounted) {
+      setState(() {
+        isShowDetail = true;
+        isShowDetailFactory = false;
+        isShowDetailFactoryFull = false;
+        if (screenCoordinate != null) {
+          final size = MediaQuery.of(context).size;
+          _infoWindowOffset = Offset(size.width / 2, (size.height * 0.5) / 2);
+
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            final RenderBox? renderBox = _infoWindowKey.currentContext?.findRenderObject() as RenderBox?;
+            if (renderBox != null && mounted) {
+              final widgetSize = renderBox.size;
+              setState(() {
+                _infoWindowOffset = Offset(
+                  (size.width - widgetSize.width) / 2,
+                  ((size.height - widgetSize.height) * 0.5) / 2,
+                );
+              });
+            }
+          });
+        }
+      });
+    }
   }
 
   markerFactoryClick(Factory fac) {
@@ -582,20 +618,36 @@ class _PageState extends State<HomeRealtimePage> {
 
   updatePinRefresh() async {
     listVehicleMarker.clear();
+    final Set<Marker> newMarkers = {};
+
     for (Vehicle v in listVehicle) {
-      final icon = await MarkerLicense.getMarkerIcon(v, isLicense, getMapIconByte(v));
+      if (v.gps?.lat == null || v.gps?.lng == null ||
+          v.gps!.lat!.isNaN || v.gps!.lng!.isNaN ||
+          v.gps!.lat! < -90 || v.gps!.lat! > 90 ||
+          v.gps!.lng! < -180 || v.gps!.lng! > 180) {
+        continue;
+      }
+
+      final cacheKey = '${v.info!.vid}_${v.gps!.course?.toInt()}_$isLicense';
+      if (!_markerIconCache.containsKey(cacheKey)) {
+        _markerIconCache[cacheKey] = await MarkerLicense.getMarkerIcon(v, isLicense, getMapIconByteV2(v));
+      }
+
       final m = Marker(
         markerId: MarkerId(v.info!.vid.toString()),
         position: LatLng(v.gps!.lat!, v.gps!.lng!),
         clusterManagerId: clusterManager.clusterManagerId,
-        icon: icon,
-        infoWindow: InfoWindow(title: v.info!.licenseplate),
+        icon: _markerIconCache[cacheKey]!,
+        flat: true,
+        anchor: const Offset(0.5, 0.5),
+        // infoWindow: InfoWindow(title: v.info!.licenseplate),
+        onTap: () async {
+          ScreenCoordinate? screenCoordinate = await mapController?.getScreenCoordinate(LatLng(v.gps!.lat!, v.gps!.lng!));
+          markerVehicleClick(v, screenCoordinate);
+        }
       );
-      markers.add(m);
-      // setState(() {
-      //   markers.add(m);
-      // });
-      // print('vehicle = ${v.info!.vid!} gps = ${v.gps!.lat!},${v.gps!.lng!}');
+      newMarkers.add(m);
+
       if (isShowDetail && vehicleClick != null && vehicleClick!.info!.vid == v.info!.vid!) {
             vehicleClick = v;
             setRadius(LatLng(vehicleClick!.gps!.lat!, vehicleClick!.gps!.lng!), vehicleClick!.info!.vid!.toString(), 80);
@@ -605,11 +657,18 @@ class _PageState extends State<HomeRealtimePage> {
             setLine();
 
             // listVehicleMarker.add(Place(latLng: LatLng(v.gps!.lat!, v.gps!.lng!), vehicle: v));
+            final detailCacheKey = '${v.info!.vid}_${v.gps!.course?.toInt()}_$isLicense';
+            if (!_markerIconCache.containsKey(detailCacheKey)) {
+              _markerIconCache[detailCacheKey] = await MarkerLicense.getMarkerIcon(v, isLicense, getMapIconByteV2(v));
+            }
             listVehicleMarker.add(
                 Marker(
                   markerId: MarkerId(v.info!.vid.toString()),
                   position: LatLng(v.gps!.lat!, v.gps!.lng!),
                   clusterManagerId: clusterManager.clusterManagerId,
+                  anchor: const Offset(0.5, 0.5),
+                  flat: true,
+                  icon: _markerIconCache[detailCacheKey]!,
                 )
             );
       }
@@ -632,19 +691,26 @@ class _PageState extends State<HomeRealtimePage> {
       //   _customInfoWindowController.hideInfoWindow!();
       // }
 
-      if (!isShowDetail) {
+      if (!isShowDetail && v.gps?.lat != null && v.gps?.lng != null &&
+          !v.gps!.lat!.isNaN && !v.gps!.lng!.isNaN) {
         // listVehicleMarker.add(Place(latLng: LatLng(v.gps!.lat!, v.gps!.lng!), vehicle: v));
+        final listCacheKey = '${v.info!.vid}_${v.gps!.course?.toInt()}_$isLicense';
+        if (!_markerIconCache.containsKey(listCacheKey)) {
+          _markerIconCache[listCacheKey] = await MarkerLicense.getMarkerIcon(v, isLicense, getMapIconByteV2(v));
+        }
         listVehicleMarker.add(
             Marker(
               markerId: MarkerId(v.info!.vid.toString()),
               position: LatLng(v.gps!.lat!, v.gps!.lng!),
               clusterManagerId: clusterManager.clusterManagerId,
-              icon: await MarkerLicense.getMarkerIcon(v, isLicense, getMapIconByte(v)),
+              icon: _markerIconCache[listCacheKey]!,
+              flat: true,
+              anchor: const Offset(0.5, 0.5),
             )
         );
       }
     }
-
+    markers = newMarkers;
     // markers.clear();
     // _manager.setItems(listVehicleMarker);
     // _manager2.setItems(listFactoryMarker);
@@ -659,6 +725,7 @@ class _PageState extends State<HomeRealtimePage> {
       markersFactory.add(Marker(
         markerId: MarkerId(v.id.toString()),
         position: LatLng(v.lat, v.lng),
+        anchor: const Offset(0.5, 0.5),
         onTap: () {
           markerFactoryClick(v);
         },
@@ -705,7 +772,9 @@ class _PageState extends State<HomeRealtimePage> {
 
   refresh() {
     try {
-      setState(() {});
+      if (mounted) {
+        setState(() {});
+      }
     } catch (e) {}
   }
 
@@ -893,6 +962,28 @@ class _PageState extends State<HomeRealtimePage> {
       // }
     }
     return listIcon[0].iconByte!;
+  }
+
+  Uint8List getMapIconByteV2(Vehicle v) {
+    final colorMap = {
+      "driving": "GREEN",
+      "ign.off": "RED",
+      "parking": "RED",
+      "idling": "YELLOW",
+      "offline": "WHITE",
+      "over_speed": "VIOLET",
+    };
+
+    final ioName = v.gps!.io_name!.toLowerCase();
+    final color = colorMap[ioName] ?? "WHITE";
+    final iconType = v.info!.vehicle_type ?? 4;
+    final pattern = "$color${iconType == 0 ? 4 : iconType}.png";
+
+    return listIcon.firstWhere((b) => b.name!.contains(pattern),
+        orElse: () => listIcon.firstWhere((b) => b.name!.contains("${colorMap[ioName] ?? "WHITE"}4.png"),
+            orElse: () => listIcon[0]
+        )
+    ).iconByte!;
   }
 
   BitmapDescriptor? _markerIconFactory;
@@ -1484,11 +1575,13 @@ class _PageState extends State<HomeRealtimePage> {
   @override
   Widget build(BuildContext context) {
     Vehicle? v = context.watch<PageProvider>().is_select_vehicle;
+
     if (v != null) {
-      _controller.future.then((value) => {
-            markerVehicleClick(v),
-            context.read<PageProvider>().selectVehicle(null)
-          });
+      _controller.future.then((controller) async {
+        ScreenCoordinate? screenCoordinate = await mapController?.getScreenCoordinate(LatLng(v.gps!.lat!, v.gps!.lng!));
+        markerVehicleClick(v, screenCoordinate);
+        context.read<PageProvider>().selectVehicle(null);
+      });
     }
     // This method is rerun every time setState is called, for instance as done
     // by the _incrementCounter method above.
@@ -1837,6 +1930,125 @@ class _PageState extends State<HomeRealtimePage> {
                         ),
                       )
                     : Container(),
+                if (vehicleClick != null && _infoWindowOffset != null)
+                  Positioned(
+                    left: _infoWindowOffset!.dx, // + MediaQuery.of(context).padding.left, //_infoWindowOffset!.dx - 100,
+                    // Adjust to center the info window
+                    top: _infoWindowOffset!.dy, // + MediaQuery.of(context).padding.top, // - 100,
+                    // Adjust to position above the marker
+                    child: Container(
+                      key: _infoWindowKey,
+                      padding: const EdgeInsets.all(4),
+                      color: Colors.white,
+                      child: Row(
+                        children: [
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Text(
+                                    vehicleClick!.info?.vehicle_name ?? '',
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    width: 2,
+                                  ),
+                                  Text(
+                                    TimeAgo.timeAgoSinceDate(vehicleClick!.gps?.gpsdate ?? ''),
+                                    style: const TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w300,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  Text(
+                                    '${vehicleClick!.gps!.location!
+                                        .admin_level3_name!} ${vehicleClick!
+                                        .gps!.location!
+                                        .admin_level2_name!} ${vehicleClick!
+                                        .gps!.location!.admin_level1_name!}',
+                                    style: const TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  Text(
+                                    '${Languages.of(context)!
+                                        .last_update} ${vehicleClick!.gps
+                                        ?.display_gpsdate ?? ''}',
+                                    style: const TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w100,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          Column(
+                            children: [
+                              Row(
+                                children: [
+                                  InkWell(
+                                    child: Image.asset(
+                                      "assets/images/google-maps.png",
+                                      height: 33.5,
+                                      width: 33.5,
+                                    ),
+                                    onTap: () {
+                                      Commons.launchMap(vehicleClick!.gps!.lat!, vehicleClick!.gps!.lng!);
+                                    },
+                                  ),
+                                  const SizedBox(
+                                    width: 5,
+                                  ),
+                                  Container(
+                                    decoration: BoxDecoration(
+                                        color: ColorCustom.blueDark,
+                                        borderRadius:
+                                        BorderRadius.circular(100),
+                                        border: Border.all(
+                                            width: 5,
+                                            color: ColorCustom.blueDark)),
+                                    child: InkWell(
+                                      child: const Icon(
+                                        Icons.share,
+                                        color: Colors.white,
+                                      ),
+                                      onTap: () {
+                                        Commons.launchShare(
+                                          "${Languages.of(context)!
+                                              .license} ${vehicleClick!.info!
+                                              .licenseplate!} ${vehicleClick!.info!
+                                              .licenseprov!}",
+                                          vehicleClick!.gps!.lat!,
+                                          vehicleClick!.gps!.lng!,);
+                                      },
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    width: 5,
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
               ],
             ),
           ),

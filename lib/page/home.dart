@@ -250,20 +250,17 @@ class _PageState extends State<HomePage> {
     List<String> listname = [
       "GREEN",
       "RED",
-      "RED",
       "YELLOW",
       "WHITE",
       "VIOLET"
     ];
 
-    for (int i = 0; i < 7; i++) {
+    for (int i = 0; i < 9; i++) {
       for (String s in listname) {
-        var path = 'assets/images/' + s + (i + 1).toString() + ".png";
-        // print(path);
+        var path = "assets/images/$s${i + 1}.png";
+        print('path: $path');
         getBytesFromAsset(path, 250).then((value) => {
-              listIcon.add(
-                  MarkerIcon(BitmapDescriptor.fromBytes(value), path, value))
-            });
+          listIcon.add(MarkerIcon(BitmapDescriptor.fromBytes(value), path, value))});
       }
     }
 

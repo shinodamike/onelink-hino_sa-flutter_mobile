@@ -34,6 +34,10 @@
 	<string>Your location is used to find nearby vehicle or navigate route to it.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Your location is used to find nearby vehicle or navigate route to it.</string>
+	<key>NSBonjourServices</key>
+	<array/>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>This app uses local network to communicate with nearby devices.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>This app need access to your gallery to save screenshots</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
@@ -45,6 +49,13 @@
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
+	</array>
+	<key>UISupportedInterfaceOrientations~ipad</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 </dict>
 </plist>
